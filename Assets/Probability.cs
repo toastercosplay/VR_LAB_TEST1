@@ -24,12 +24,20 @@ public class Probability : MonoBehaviour
     public TextMeshProUGUI nText;
     public TextMeshProUGUI lText;
 
+    LineRenderer box;
+
+
     //simulated probability function: 
     //P_n (x,t) = 2/L * sin^2 (k_n (x - x_c + L/2))   
 
     void Start()
     {
         UpdateMathConstants();
+
+        box = GetComponent<LineRenderer>();
+        //box.useWorldSpace = true;
+        //box.alignment = LineAlignment.Local;
+        DrawBox();
         
         //creating particles and then deavicating them
         for (int i = 0; i < amountOfParticles; i++)
@@ -105,6 +113,32 @@ public class Probability : MonoBehaviour
         L = new_L;
         lText.text = "L = " + L.ToString("F2");
         UpdateMathConstants();
+        DrawBox();
+    }
+
+    public void DrawBox()
+    {
+        box.positionCount = 16;
+        float halfL = L / 2f;
+
+
+        Vector3 LBB =    new Vector3(x_c - halfL, -halfL, x_c - halfL);
+        Vector3 RBB =    new Vector3(x_c + halfL, -halfL, x_c - halfL);
+        Vector3 RFB =    new Vector3(x_c + halfL, -halfL, x_c + halfL);
+        Vector3 LFB =    new Vector3(x_c - halfL, -halfL, x_c + halfL);
+
+        Vector3 LBT =    new Vector3(x_c - halfL, halfL, x_c - halfL);
+        Vector3 RBT =    new Vector3(x_c + halfL, halfL, x_c - halfL);
+        Vector3 RFT =    new Vector3(x_c + halfL, halfL, x_c + halfL);
+        Vector3 LFT =    new Vector3(x_c - halfL, halfL, x_c + halfL);
+
+
+        Vector3[] path = new Vector3[]
+        {
+            LBB, RBB, RFB, LFB, LBB, LBT, RBT, RFT, LFT, LBT, LFT, LFB, RFB, RFT, RBT, RBB
+        };
+
+        box.SetPositions(path);
     }
 
 }
