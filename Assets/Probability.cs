@@ -11,20 +11,30 @@ public class Probability : MonoBehaviour
 
     //parameter variables:
 
-    public float L = 10f; //length of box
+    public float L = .2f; //length of box in nanometers
     private float x_c = 0f; //center of box
 
-    public int n = 1; //energy level
-    private float k_n; //wave number
+    public int n_x = 1; //energy level x
+    public int n_y = 1; //energy level y
+    public int n_z = 1; //energy level z
+    private float k_n_x; //wave number x
+    private float k_n_y; //wave number y
+    private float k_n_z; //wave number z
+
+    //physical parameters for energy
+    private float mass = 9.11e-31f; //mass of electron in kg
+    private float h = 6.626e-34f; //Planck's constant
+    private float particleEnergy;
 
     public int amountOfParticles = 100; //number of particles to spawn for probability distribution
 
     //for UI
 
-    public TextMeshProUGUI nText;
+    public TextMeshProUGUI nXText;
+    public TextMeshProUGUI nYText;
+    public TextMeshProUGUI nZText;
     public TextMeshProUGUI lText;
-
-    LineRenderer box;
+    public TextMeshProUGUI energyText;
 
 
     //simulated probability function: 
@@ -33,11 +43,6 @@ public class Probability : MonoBehaviour
     void Start()
     {
         UpdateMathConstants();
-
-        box = GetComponent<LineRenderer>();
-        //box.useWorldSpace = true;
-        //box.alignment = LineAlignment.Local;
-        DrawBox();
         
         //creating particles and then deavicating them
         for (int i = 0; i < amountOfParticles; i++)
@@ -57,7 +62,7 @@ public class Probability : MonoBehaviour
         UpdateParticlePositions();
     }
     
-    float CalculateQuantumPosition()
+    float CalculateQuantumPosition(float K_N)
     {
         //using rejection sampoling
         //look for a valid x until we find one that fits the probability density.
@@ -70,7 +75,7 @@ public class Probability : MonoBehaviour
 
             //calculate P_n(x) at this testX
             //P_n(x) = (2/L) * sin^2(k_n * (x - x_c + L/2))
-            float argument = k_n * (testX - x_c + (L / 2f));
+            float argument = K_N * (testX - x_c + (L / 2f));
             float sinVal = Mathf.Sin(argument);
             float probDensity = (2f / L) * (sinVal * sinVal);
 
@@ -86,7 +91,9 @@ public class Probability : MonoBehaviour
 
     private void UpdateMathConstants()
     {
-        k_n = n * Mathf.PI / L;
+        k_n_x = n_x * Mathf.PI / L;
+        k_n_y = n_y * Mathf.PI / L;
+        k_n_z = n_z * Mathf.PI / L;
     }
 
     void UpdateParticlePositions()
@@ -94,17 +101,31 @@ public class Probability : MonoBehaviour
         foreach (GameObject p in particlePool)
         {
             p.SetActive(true);
-            float newX = CalculateQuantumPosition();
-            float newZ = CalculateQuantumPosition();
-            float newY = CalculateQuantumPosition();
+            float newX = CalculateQuantumPosition(k_n_x);
+            float newZ = CalculateQuantumPosition(k_n_z);
+            float newY = CalculateQuantumPosition(k_n_y);
             p.transform.position = new Vector3(newX, newY, newZ);
         }
     }
 
-    public void UpdateEnergyLevel(float new_n)
+    public void UpdateEnergyLevelX(float new_n)
     {
-        n = (int)new_n;
-        nText.text = "n = " + n.ToString();
+        n_x = (int)new_n;
+        nXText.text = "n_x = " + n_x.ToString();
+        UpdateMathConstants();
+    }
+
+    public void UpdateEnergyLevelY(float new_n)
+    {
+        n_y = (int)new_n;
+        nYText.text = "n_y = " + n_y.ToString();
+        UpdateMathConstants();
+    }
+
+    public void UpdateEnergyLevelZ(float new_n)
+    {
+        n_z = (int)new_n;
+        nZText.text = "n_z = " + n_z.ToString();
         UpdateMathConstants();
     }
 
@@ -116,29 +137,22 @@ public class Probability : MonoBehaviour
         DrawBox();
     }
 
-    public void DrawBox()
+    public float getLength()
     {
-        box.positionCount = 16;
-        float halfL = L / 2f;
-
-
-        Vector3 LBB =    new Vector3(x_c - halfL, -halfL, x_c - halfL);
-        Vector3 RBB =    new Vector3(x_c + halfL, -halfL, x_c - halfL);
-        Vector3 RFB =    new Vector3(x_c + halfL, -halfL, x_c + halfL);
-        Vector3 LFB =    new Vector3(x_c - halfL, -halfL, x_c + halfL);
-
-        Vector3 LBT =    new Vector3(x_c - halfL, halfL, x_c - halfL);
-        Vector3 RBT =    new Vector3(x_c + halfL, halfL, x_c - halfL);
-        Vector3 RFT =    new Vector3(x_c + halfL, halfL, x_c + halfL);
-        Vector3 LFT =    new Vector3(x_c - halfL, halfL, x_c + halfL);
-
-
-        Vector3[] path = new Vector3[]
-        {
-            LBB, RBB, RFB, LFB, LBB, LBT, RBT, RFT, LFT, LBT, LFT, LFB, RFB, RFT, RBT, RBB
-        };
-
-        box.SetPositions(path);
+        return L;
     }
+
+    public void calculateParticleEnergy()
+    {
+        //using E = (n_x^2 + n_y^2 + n_z^2)*h^2/(8mL^2)
+
+        float tempL = L * 1e-9f; //convert nm to m for calculation
+
+        particleEnergy = ( (n_x*n_x) + (n_y*n_y) + (n_z*n_z) ) * (h*h) / (8f * mass * tempL * tempL);
+        energyText.text = "E = " + particleEnergy.ToString("E2") + "eV";
+
+    }
+
+        
 
 }
