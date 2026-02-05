@@ -11,7 +11,7 @@ public class Probability : MonoBehaviour
 
     //parameter variables:
 
-    public float L = .2f; //length of box in nanometers
+    public float L = 2f; //length of box (convert to units later)
     private float x_c = 0f; //center of box
 
     public int n_x = 1; //energy level x
@@ -36,6 +36,9 @@ public class Probability : MonoBehaviour
     public TextMeshProUGUI lText;
     public TextMeshProUGUI energyText;
 
+    //box display object
+    [SerializeField] TheBox box;
+
 
     //simulated probability function: 
     //P_n (x,t) = 2/L * sin^2 (k_n (x - x_c + L/2))   
@@ -53,13 +56,18 @@ public class Probability : MonoBehaviour
             particlePool.Add(obj);
         }
 
-        nText.text = "n = " + n.ToString();
-        lText.text = "L = " + L.ToString("F2");
+        nXText.text = "n_x = " + n_x.ToString();
+        nYText.text = "n_y = " + n_y.ToString();
+        nZText.text = "n_z = " + n_z.ToString();
+        lText.text = "L = " + (L/10f).ToString("F2") +  "nm";
+
+        box.CreateBoxMesh(L);
     } 
 
     void Update()
     {
         UpdateParticlePositions();
+        calculateParticleEnergy();
     }
     
     float CalculateQuantumPosition(float K_N)
@@ -132,9 +140,9 @@ public class Probability : MonoBehaviour
     public void UpdateLength(float new_L)
     {
         L = new_L;
-        lText.text = "L = " + L.ToString("F2");
+        lText.text = "L = " + (L/10f).ToString("F2") +  "nm";
         UpdateMathConstants();
-        DrawBox();
+        box.CreateBoxMesh(L);
     }
 
     public float getLength()
@@ -146,10 +154,12 @@ public class Probability : MonoBehaviour
     {
         //using E = (n_x^2 + n_y^2 + n_z^2)*h^2/(8mL^2)
 
-        float tempL = L * 1e-9f; //convert nm to m for calculation
+        float tempL = L * 1e-9f * .1f; //convert nm to m for calculation
 
         particleEnergy = ( (n_x*n_x) + (n_y*n_y) + (n_z*n_z) ) * (h*h) / (8f * mass * tempL * tempL);
-        energyText.text = "E = " + particleEnergy.ToString("E2") + "eV";
+        //converting to eV from J
+        particleEnergy = particleEnergy / 1.602e-19f;
+        energyText.text = "E = " + particleEnergy.ToString("E2") + " eV";
 
     }
 
