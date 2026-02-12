@@ -39,6 +39,9 @@ public class Probability : MonoBehaviour
     //box display object
     [SerializeField] TheBox box;
 
+    //bool for toggling time
+    bool timeEnabled = true;
+
 
     //simulated probability function: 
     //P_n (x,t) = 2/L * sin^2 (k_n (x - x_c + L/2))   
@@ -66,7 +69,11 @@ public class Probability : MonoBehaviour
 
     void Update()
     {
-        UpdateParticlePositions();
+        if (timeEnabled)
+        {
+            UpdateParticlePositions();
+        }
+        
         calculateParticleEnergy();
     }
     
@@ -163,6 +170,10 @@ public class Probability : MonoBehaviour
 
     }
 
+    public void toggleTime()
+    {
+        timeEnabled = !timeEnabled;
+    }
         
 
 }
