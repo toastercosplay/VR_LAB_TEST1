@@ -128,6 +128,7 @@ public class Probability : MonoBehaviour
         n_x = (int)new_n;
         nXText.text = "n_x = " + n_x.ToString();
         UpdateMathConstants();
+        UpdateParticlePositions();
     }
 
     public void UpdateEnergyLevelY(float new_n)
@@ -135,6 +136,7 @@ public class Probability : MonoBehaviour
         n_y = (int)new_n;
         nYText.text = "n_y = " + n_y.ToString();
         UpdateMathConstants();
+        UpdateParticlePositions();
     }
 
     public void UpdateEnergyLevelZ(float new_n)
@@ -142,6 +144,7 @@ public class Probability : MonoBehaviour
         n_z = (int)new_n;
         nZText.text = "n_z = " + n_z.ToString();
         UpdateMathConstants();
+        UpdateParticlePositions();
     }
 
     public void UpdateLength(float new_L)
@@ -150,6 +153,7 @@ public class Probability : MonoBehaviour
         lText.text = "L = " + (L/10f).ToString("F2") +  "nm";
         UpdateMathConstants();
         box.CreateBoxMesh(L);
+        UpdateParticlePositions();
     }
 
     public float getLength()
