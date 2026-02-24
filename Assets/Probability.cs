@@ -42,6 +42,12 @@ public class Probability : MonoBehaviour
     //bool for toggling time
     bool timeEnabled = true;
 
+    //bool for isolation
+    bool isolated = false;
+
+    [SerializeField] Material electronMat;
+    [SerializeField] Material protonMat;
+
 
     //simulated probability function: 
     //P_n (x,t) = 2/L * sin^2 (k_n (x - x_c + L/2))   
@@ -115,7 +121,7 @@ public class Probability : MonoBehaviour
     {
         foreach (GameObject p in particlePool)
         {
-            p.SetActive(true);
+            if (!isolated) p.SetActive(true);
             float newX = CalculateQuantumPosition(k_n_x);
             float newZ = CalculateQuantumPosition(k_n_z);
             float newY = CalculateQuantumPosition(k_n_y);
@@ -178,6 +184,56 @@ public class Probability : MonoBehaviour
     {
         timeEnabled = !timeEnabled;
     }
-        
+
+    public void isolateParticle()
+    {
+        if (isolated == false)
+        {
+            foreach (GameObject p in particlePool)
+            {
+                p.SetActive(false);
+            }
+
+            particlePool[0].SetActive(true);
+            isolated = true;
+        }
+
+        else
+        {
+            foreach (GameObject p in particlePool)
+            {
+                p.SetActive(true);
+            }
+
+            isolated = false;
+        }
+    }
+
+    public void electron()
+    {
+        mass = 9.11e-31f;
+        foreach (GameObject p in particlePool)
+        {
+            if (p.TryGetComponent<Renderer>(out Renderer ren))
+            {
+                ren.material = electronMat;
+            }
+        }
+        calculateParticleEnergy();
+    }
+
+    public void proton()
+    {
+        mass = 1.672e-27f;
+        foreach (GameObject p in particlePool)
+        {
+            if (p.TryGetComponent<Renderer>(out Renderer ren))
+            {
+                ren.material = protonMat;
+            }
+        }
+        calculateParticleEnergy();
+    }
+
 
 }
