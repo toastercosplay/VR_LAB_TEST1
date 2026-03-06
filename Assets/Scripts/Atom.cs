@@ -44,24 +44,50 @@ public class Atom : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        ShowSOrbital(S1Mat);
+        ShowPOrbital(P1Mat);
     }
 
-    void ShowSOrbital()
+    //information found here:
+    //https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Inorganic_Chemistry_(LibreTexts)/02%3A_Atomic_Structure/2.02%3A_The_Schrodinger_equation_particle_in_a_box_and_atomic_wavefunctions/2.2.02%3A_Quantum_Numbers_and_Atomic_Wave_Functions
+
+
+    //wave function for 1s orbital:
+    //2[Z/a_0]^3/2 * e^(Zr/a_0) + 
+
+    void ShowSOrbital(Material mat)
     {
         for (int i = 0; i < amountOfParticles; i++)
         {
-            electron1[i].SetActive(true);
-            electron1[i].transform.localPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+            GameObject current = electron1[i];
+            
+            current.SetActive(true);
+            current.transform.localPosition = new Vector3(0,0, 0);
+            //rotate in a random direction and move forward a random value between 0 and 1
+            current.transform.localRotation = Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
+            float randomDistance = Random.Range(0f, 1f);
+            current.transform.Translate(Vector3.forward * randomDistance);
+            //set material
+            if (current.TryGetComponent<Renderer>(out Renderer ren))
+            {
+                ren.material = mat;
+            }
         }
     }
 
-    void ShowPOrbital()
+    void ShowPOrbital(Material mat)
     {
         for (int i = 0; i < amountOfParticles; i++)
         {
-            electron2[i].SetActive(true);
-            electron2[i].transform.localPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+            GameObject current = electron2[i];
+
+            current.SetActive(true);
+            current.transform.localPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+
+            if (current.TryGetComponent<Renderer>(out Renderer ren))
+            {
+                ren.material = mat;
+            }
         }
     }
 }
