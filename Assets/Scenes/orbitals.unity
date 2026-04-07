@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 70110f293a2868e4dbb8dbbbe1f16aa5, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -316,9 +316,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particle: {fileID: 5556052459761145387, guid: 847034dd65d71aa4bbe7626f2c72a044, type: 3}
-  amountOfParticles: 250
+  atomicNumber: 1
+  amountOfParticles: 750
+  visualScale: 0.5
   S1Mat: {fileID: 2100000, guid: f274e59b18a66484e93e0e8543d1ba57, type: 2}
-  S2Mat: {fileID: 0}
+  S2Mat: {fileID: 2100000, guid: 3260db5b48ecf804dbccc88b95d25475, type: 2}
   P1Mat: {fileID: 2100000, guid: 1e70f568538ff3143928fbf97c39aa8d, type: 2}
 --- !u!4 &230494124
 Transform:

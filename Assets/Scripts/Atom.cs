@@ -10,31 +10,49 @@ public class Atom : MonoBehaviour
     private List<GameObject> electron2 = new List<GameObject>(); //2p
     private List<GameObject> electron3 = new List<GameObject>();
 
+    public int atomicNumber = 1;
+
     public int amountOfParticles = 250;
     public float visualScale = 2.0f;
 
     [SerializeField] Material S1Mat;
-    //[SerializeField] Material S2Mat;
+    [SerializeField] Material S2Mat;
     [SerializeField] Material P1Mat;
+
+    private const int max_1s = 2;
+    private const int max_2s = 2;
+    private const int max_2p = 6;
 
     void Start()
     {
+             
         // 1s Orbital Setup
-        InitializeOrbital(electron1, S1Mat);
+        InitializeOrbital(electron1, S1Mat, max_1s * amountOfParticles);
+        InitializeOrbital(electron2, S2Mat, max_2s * amountOfParticles);
         // 2p Orbital Setup
-        InitializeOrbital(electron2, P1Mat);
+        InitializeOrbital(electron3, P1Mat, max_2p * amountOfParticles);
+        
     } 
 
     // Update is called once per frame
     void Update()
     {
-        ShowSOrbital();
-        ShowPOrbital();
+        int electrons1s = Mathf.Min(atomicNumber, max_1s);
+        int remaining = Mathf.Max(0, atomicNumber - max_1s);
+
+        int electrons2s = Mathf.Min(remaining, max_2s);
+        remaining = Mathf.Max(0, remaining - max_2s);
+
+        int electrons2p = Mathf.Min(remaining, max_2p);
+
+        Draw1sOrbital(electrons1s);
+        Draw2sOrbital(electrons2s);
+        Draw2pOrbital(electrons2p);
     }
 
-    void InitializeOrbital(List<GameObject> electronList, Material mat)
+    void InitializeOrbital(List<GameObject> electronList, Material mat, int maxParticles)
     {
-        for (int i = 0; i < amountOfParticles; i++)
+        for (int i = 0; i < maxParticles; i++)
         {
             GameObject obj = Instantiate(particle, Vector3.zero, Quaternion.identity);
             obj.transform.SetParent(this.transform);
@@ -62,15 +80,24 @@ public class Atom : MonoBehaviour
     // 2pz Wave function: psi_2pz = (1 / 4*sqrt(2*pi * a_0^3)) * (z/a_0) * e^(-r/2a_0)
     // Probability Density (psi^2) is proportional to: z^2 * e^(-r/a_0)
 
-    void ShowSOrbital()
+    void Draw1sOrbital(int electronCount)
     {
-        for (int i = 0; i < amountOfParticles; i++)
+        int targetParticles = electronCount * amountOfParticles;
+        
+        for (int i = 0; i < electron1.Count; i++)
         {
-            GameObject current = electron1[i];
+            if (i>=targetParticles)
+            {
+                electron1[i].SetActive(false);
+                continue;
+            }
+            electron1[i].SetActive(true);
+            
+            //GameObject current = electron1[i];
             Vector3 validPosition = Vector3.zero;
 
             // Rejection Sampling Loop
-            for (int safety = 0; safety < 100; safety++) 
+            for (int safety = 0; safety < 50; safety++) 
             {
                 // 1. Generate a random point in a local 3D bounding box
                 Vector3 pos = new Vector3(Random.Range(-4f, 4f), Random.Range(-4f, 4f), Random.Range(-4f, 4f));
@@ -88,43 +115,87 @@ public class Atom : MonoBehaviour
             }
 
             // Apply position with our visual scale
-            current.transform.localPosition = validPosition * visualScale;
+            electron1[i].transform.localPosition = validPosition * visualScale;
         }
     }
 
-    void ShowPOrbital()
+    void Draw2sOrbital(int electronCount)
     {
-        for (int i = 0; i < amountOfParticles; i++)
+        int targetParticles = electronCount * amountOfParticles;
+
+        for (int i = 0; i < electron2.Count; i++)
         {
-            GameObject current = electron2[i];
+            if (i >= targetParticles)
+            {
+                electron2[i].SetActive(false);
+                continue;
+            }
+            electron2[i].SetActive(true);
+
+            //GameObject current = electron1[i];
             Vector3 validPosition = Vector3.zero;
 
             // Rejection Sampling Loop
-            for (int safety = 0; safety < 100; safety++) 
+            for (int safety = 0; safety < 50; safety++)
             {
-                // 1. Generate a random point in a slightly larger bounding box (P orbitals stretch further)
+                // 1. Generate a random point in a local 3D bounding box
                 Vector3 pos = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f), Random.Range(-8f, 8f));
-                
-                float r = pos.magnitude;
-                float z = pos.z; // The 2p_z orbital aligns along the Z axis
-                
-                // 2. Calculate Probability Density P ~ z^2 * e^(-r)
-                float probability = (z * z) * Mathf.Exp(-r);
-                
-                // 3. The mathematical maximum value of this specific density function occurs at z = r = 2
-                // The max value is 4 * e^(-2) which is roughly 0.5413
-                float maxProbability = 4f * Mathf.Exp(-2f);
-                
-                // Roll the dice against the max probability
-                if (Random.Range(0f, maxProbability) < probability)
+                float r = pos.magnitude; // distance from nucleus
+
+                // 2. Calculate Probability Density P ~ e^(-2r)
+                float probability = Mathf.Pow(2f - r, 2) * Mathf.Exp(-r);
+
+                // 3. Roll a random chance against the highest possible probability (which is 1.0 at r=0)
+                if (Random.Range(0f, 4f) < probability)
                 {
                     validPosition = pos;
-                    break;
+                    break; // We found a valid point, exit the while loop!
                 }
             }
 
             // Apply position with our visual scale
-            current.transform.localPosition = validPosition * visualScale;
+            electron2[i].transform.localPosition = validPosition * visualScale;
+        }
+    }
+
+    void Draw2pOrbital(int electronCount)
+    {
+        int targetParticles = electronCount * amountOfParticles;
+
+        for (int i = 0; i < electron3.Count; i++)
+        {
+            if (i >= targetParticles)
+            {
+                electron3[i].SetActive(false);
+                continue;
+            }
+            electron3[i].SetActive(true);
+
+            //GameObject current = electron1[i];
+            Vector3 validPosition = Vector3.zero;
+
+            // Rejection Sampling Loop
+            for (int safety = 0; safety < 50; safety++)
+            {
+                // 1. Generate a random point in a local 3D bounding box
+                Vector3 pos = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f), Random.Range(-8f, 8f));
+                float r = pos.magnitude; // distance from nucleus
+                float z = pos.z;
+
+                // 2. Calculate Prob(ability Density P ~ e^(-2r)
+                float probability = (z * z) * Mathf.Exp(-r);
+                float maxProb = .541f;
+
+                // 3. Roll a random chance against the highest possible probability (which is 1.0 at r=0)
+                if (Random.Range(0f, maxProb) < probability)
+                {
+                    validPosition = pos;
+                    break; // We found a valid point, exit the while loop!
+                }
+            }
+
+            // Apply position with our visual scale
+            electron3[i].transform.localPosition = validPosition * visualScale;
         }
     }
 }
