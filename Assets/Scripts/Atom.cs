@@ -100,7 +100,7 @@ public class Atom : MonoBehaviour
             for (int safety = 0; safety < 50; safety++) 
             {
                 // 1. Generate a random point in a local 3D bounding box
-                Vector3 pos = new Vector3(Random.Range(-4f, 4f), Random.Range(-4f, 4f), Random.Range(-4f, 4f));
+                Vector3 pos = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f), Random.Range(-8f, 8f));
                 float r = pos.magnitude; // distance from nucleus
                 
                 // 2. Calculate Probability Density P ~ e^(-2r)
