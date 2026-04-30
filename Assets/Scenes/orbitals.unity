@@ -2188,12 +2188,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8491c76ba05dfd24bb07da7f0c5bbbba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  atomicNumber: 6
+  atomicNumber: 5
   particlesPerElectron: 10000
   visualScale: 0.5
-  particleSize: 0.05
+  particleSize: 0.085
+  jitterAmount: 0
+  probabilityCutoff: 0.015
   color1s: {r: 1, g: 0, b: 0, a: 1}
-  color2s: {r: 0, g: 1, b: 0, a: 1}
+  color2s: {r: 1, g: 0.8733635, b: 0, a: 1}
   color2p: {r: 0, g: 1, b: 1, a: 1}
 --- !u!199 &1552254142
 ParticleSystemRenderer:
